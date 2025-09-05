@@ -1,0 +1,29 @@
+Dangling DNS / Hostname Takeovers still being used by spammers!
+
+I did a presentation about this stuff at @m3aawg 60 in San Francisco, back in February 2024. It's still happening. From a recent spam (redacting the actual hostname used by the spammer):
+
+Received: from spammer-hostname (richardson.rice[.]edu. [185.251.91.33])
+
+The reverse DNS here, richardson.rice[.]edu is a "CNAME" DNS record pointing to www.sidrichardson[.]net. That means any DNS lookups performed on richardson.rice[.]edu get redirected to www.sidrichardson[.]net
+
+richardson.rice[.]edu CNAME www.sidrichardson[.]net
+
+Whatever connection @riceuniversity had with sidrichardson[.]net was defunct a long time ago, since that domain name was allowed to expire.
+
+Some miscreants discovered this and registered sidrichardson[.]net on 2025-06-19. Now the reverse DNS of all these A records is controlled by them and therefore shows up as richardson[.]rice.edu
+
+www.sidrichardson[.]net. 1799 IN A 80.64.24.42
+www.sidrichardson[.]net. 1799 IN A 185.251.91.33
+www.sidrichardson[.]net. 1799 IN A 185.251.88.52
+www.sidrichardson[.]net. 1799 IN A 37.114.46.81
+www.sidrichardson[.]net. 1799 IN A 141.8.199.68
+www.sidrichardson[.]net. 1799 IN A 185.83.146.101
+www.sidrichardson[.]net. 60 IN A 185.72.144.47
+www.sidrichardson[.]net. 1799 IN A 185.83.146.100
+www.sidrichardson[.]net. 1799 IN A 185.185.69.184
+www.sidrichardson[.]net. 1799 IN A 193.222.62.151
+www.sidrichardson[.]net. 1799 IN A 98.126.159.33
+
+The spammer uses different domains for the HELO, the sender envelope, the friendly from, none of them match richardson.rice[.]edu. What's the point? I guess they wanted a hostname with a good reputation (such as a university) for the reverse DNS of their sending IP? Maybe this increases deliverability on some platforms?
+
+However, anti-spam DNSBL systems that can list individual hostnames such as SURBL can (and do) have that hostname listed, while the legitimate domain (rice[.]edu) is of course not listed. The now malicious and controlled by spammers domain sidrichardson[.]net is also listed.
